@@ -1,0 +1,21 @@
+#!/bin/bash
+# docker-compose.yml - 一键部署
+# 用法: docker-compose up -d
+
+version: '3.8'
+
+services:
+  pdf2docx:
+    build: .
+    ports:
+      - "3000:3000"   # Web UI
+      - "8000:8000"   # REST API
+    volumes:
+      - ./output:/app/output
+      - fonts:/root/.fonts
+    restart: unless-stopped
+    environment:
+      - PYTHONUNBUFFERED=1
+
+volumes:
+  fonts:

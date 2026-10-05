@@ -1,8 +1,31 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# 输出文件
 output/
 *.docx
 *.pdf
-__pycache__/
-*.pyc
-.env
+!web-ui/public/*.pdf
+
+# Web UI
+web-ui/node_modules/
+web-ui/.next/
+web-ui/out/
+web-ui/build/
+
+# 临时文件
 *.log
-/tmp/
+*.tmp
+.env
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
