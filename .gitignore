@@ -1,0 +1,8 @@
+output/
+*.docx
+*.pdf
+__pycache__/
+*.pyc
+.env
+*.log
+/tmp/
