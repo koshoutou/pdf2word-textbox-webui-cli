@@ -46,18 +46,20 @@ FONT_NAME_MAP = {
 }
 
 # 西文字体判定 (latin)
+# 修复缺陷#7: CJK字体的西文部分不再强制Times New Roman
+# 改为使用相同CJK字体名, 让字体回退系统处理
 LATIN_FONT_MAP = {
-    '仿宋': 'Times New Roman',
-    '宋体': 'Times New Roman',
-    '黑体': 'Arial',
-    '微软雅黑': 'Arial',
-    '楷体': 'Times New Roman',
-    '华文仿宋': 'Times New Roman',
-    '华文宋体': 'Times New Roman',
-    '华文黑体': 'Arial',
-    '华文楷体': 'Times New Roman',
-    '华文中宋': 'Times New Roman',
-    '新宋体': 'Times New Roman',
+    '仿宋': '仿宋',
+    '宋体': '宋体',
+    '黑体': '黑体',
+    '微软雅黑': '微软雅黑',
+    '楷体': '楷体',
+    '华文仿宋': '华文仿宋',
+    '华文宋体': '华文宋体',
+    '华文黑体': '华文黑体',
+    '华文楷体': '华文楷体',
+    '华文中宋': '华文中宋',
+    '新宋体': '新宋体',
 }
 
 

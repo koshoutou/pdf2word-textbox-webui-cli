@@ -113,9 +113,16 @@ class PageData:
 class PDFExtractor:
     """PDF 提取器"""
 
-    def __init__(self, pdf_path: str):
+    def __init__(self, pdf_path: str, password: str = None):
         self.pdf_path = pdf_path
         self.doc = fitz.open(pdf_path)
+        # 修复缺陷#9: 加密PDF检测和密码校验
+        if self.doc.is_encrypted:
+            if password:
+                if not self.doc.authenticate(password):
+                    raise ValueError(f"PDF已加密, 提供的密码不正确: {pdf_path}")
+            else:
+                raise ValueError(f"PDF已加密, 需要提供密码: {pdf_path}")
         self.page_count = len(self.doc)
 
     def close(self):

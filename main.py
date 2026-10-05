@@ -66,6 +66,7 @@ def main():
     ap.add_argument('--no-annotations', action='store_true', help='禁用PDF注释还原')
     ap.add_argument('--no-page-breaks', action='store_true', help='不保留分页符')
     ap.add_argument('--report', action='store_true', help='生成转换质量报告')
+    ap.add_argument('--password', default=None, help='加密PDF的密码')
     ap.add_argument('-v', '--verbose', action='store_true', help='详细日志')
     args = ap.parse_args()
 
@@ -91,6 +92,7 @@ def main():
         toc_max_level=max(1, min(9, args.toc_level)),
         restore_metadata=not args.no_metadata,
         detect_annotations=not args.no_annotations,
+        password=args.password,
         preserve_page_breaks=not args.no_page_breaks,
         verbose=args.verbose,
     )

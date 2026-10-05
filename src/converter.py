@@ -37,6 +37,7 @@ class ConversionOptions:
     toc_max_level: int = 3                            # 目录最大级别
     restore_metadata: bool = True                     # 还原 PDF 元数据到 DOCX 属性
     detect_annotations: bool = True                   # PDF 注释还原 (高亮/批注/删除线)
+    password: Optional[str] = None                    # 加密PDF密码
     header_to_all: bool = True                        # 统一页眉
     footer_to_all: bool = True                        # 统一页脚
     verbose: bool = False
@@ -73,7 +74,7 @@ class PDF2DocxConverter:
         self._emit_progress(5, '开始转换')
 
         # 1. 提取 PDF 数据
-        with PDFExtractor(self.pdf_path) as extractor:
+        with PDFExtractor(self.pdf_path, password=self.options.password) as extractor:
             self.stats['pages'] = extractor.page_count
             # 解析页码范围
             pages_to_convert = self._resolve_pages(extractor.page_count)
