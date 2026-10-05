@@ -135,11 +135,12 @@ class PDF2DocxConverter:
             page_height = page_data_list[0].height if page_data_list else 792
             builder = DocxBuilder(page_width=page_width, page_height=page_height,
                                   verbose=self.options.verbose)
-            # 边距: 估算 (留出页眉页脚空间)
-            # 使用固定边距匹配原PDF (避免估算偏差导致内容溢出)
-            # 原PDF: Letter 612x792, 边距约 top=54 bottom=54 left=72 right=72
-            margin_top = 54
-            margin_bottom = 54
+            # 边距: 精确匹配原PDF内容区
+            # 原PDF: 内容y范围约73~694, 即内容区高度621pt
+            # 页面高792 - 内容区621 = 171pt (上下边距总和)
+            # top=73, bottom=792-694=98
+            margin_top = 73
+            margin_bottom = 98
             margin_left = 72
             margin_right = 72
             builder.setup_page(
@@ -186,9 +187,9 @@ class PDF2DocxConverter:
                 # ★ 分页对齐: 在页末填充空行, 把下页内容推到新页 (重量级, 默认关)
                 if self.options.fill_page_boundary and self.options.preserve_page_breaks:
                     self._fill_page_to_boundary(builder, layout, page_data_map.get(layout.page_no))
-                # 分页符: 默认不插入 (流式排版, 避免空页)
-                # 仅当 fill_page_boundary 启用时才插入分页符
-                if self.options.fill_page_boundary and self.options.preserve_page_breaks and idx < len(layouts) - 1:
+                # ★ 每页强制分页: 确保DOCX页数=PDF页数
+                # 配合精确边距, 让每页内容不溢出
+                if self.options.preserve_page_breaks and idx < len(layouts) - 1:
                     builder.add_page_break()
 
             # 6b. ★ TOC 目录生成 (基于heading) + 书签

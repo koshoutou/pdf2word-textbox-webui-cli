@@ -486,25 +486,11 @@ class LayoutAnalyzer:
             # 减去页面左边距 (经验值)
             left_indent = max(0, left_indent - 36)
 
-        # 行距
-        line_spacings = []
-        for i in range(1, len(lines)):
-            gap = lines[i].bbox[1] - lines[i - 1].bbox[3]
-            h = lines[i - 1].bbox[3] - lines[i - 1].bbox[1]
-            if h > 0:
-                line_spacings.append((gap + h) / h)
-        line_spacing = None
-        if line_spacings:
-            avg_ls = sum(line_spacings) / len(line_spacings)
-            # 1.0 / 1.5 / 2.0 等标准值
-            if abs(avg_ls - 1.0) < 0.15:
-                line_spacing = 1.0
-            elif abs(avg_ls - 1.5) < 0.2:
-                line_spacing = 1.5
-            elif abs(avg_ls - 2.0) < 0.2:
-                line_spacing = 2.0
-            else:
-                line_spacing = round(avg_ls, 2)
+        # 行距: 固定14pt (匹配原PDF行高)
+        # 原PDF: 10pt/14pt字号, 行高约14pt
+        # 不再用动态计算(偏差大), 直接用固定值
+        first_size = max((s.size for s in first.spans), default=12)
+        line_spacing = None  # 不设置段落级行距, 用Normal样式的14pt
 
         # 段前/段后 (减小间距, 匹配原PDF紧凑排版)
         first_size = max((s.size for s in first.spans), default=12)
@@ -532,10 +518,11 @@ class LayoutAnalyzer:
             is_heading = True
             heading_level = 1
 
-        # 标题段前段后保留间距 (标题需要视觉分隔)
-        if is_heading:
-            space_before = first_size * 0.5   # 段前 0.5 倍字号
-            space_after = first_size * 0.3    # 段后 0.3 倍字号
+        # 标题段前段后不设间距 (匹配原PDF紧凑排版)
+        # 原PDF标题与正文间无额外间距, 通过字号区分
+        # if is_heading:
+        #     space_before = first_size * 0.5
+        #     space_after = first_size * 0.3
 
         para = ParagraphData(
             alignment=alignment,

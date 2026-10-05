@@ -61,7 +61,7 @@ class DocxBuilder:
 
     def _setup_default_styles(self):
         """设置默认样式 (Normal)
-        默认字号10.5pt(五号), 匹配中文公文标准
+        默认字号10.5pt(五号), 固定行距14pt, 匹配中文公文标准
         """
         style = self.doc.styles['Normal']
         style.font.name = 'Times New Roman'
@@ -74,10 +74,14 @@ class DocxBuilder:
         rfonts.set(qn('w:eastAsia'), '宋体')
         rfonts.set(qn('w:ascii'), 'Times New Roman')
         rfonts.set(qn('w:hAnsi'), 'Times New Roman')
-        style.font.size = Pt(10.5)  # 五号字, 匹配原PDF
-        # 段落行距 固定值 14pt (匹配原PDF行高)
+        style.font.size = Pt(10.5)  # 五号字
+        # 段落固定行距14pt (原PDF行高约14pt, 紧凑排版)
+        from docx.enum.text import WD_LINE_SPACING
         pf = style.paragraph_format
-        pf.line_spacing = 1.0
+        pf.line_spacing = Pt(14)
+        pf.line_spacing_rule = WD_LINE_SPACING.EXACTLY
+        pf.space_before = Pt(0)
+        pf.space_after = Pt(0)
 
     # ---------- 页面设置 ----------
     def setup_page(self, width_pt: float, height_pt: float,
@@ -386,10 +390,16 @@ class DocxBuilder:
             pf.first_line_indent = Pt(para.first_line_indent)
         if para.left_indent > 0:
             pf.left_indent = Pt(para.left_indent)
-        # 行距
+        # 行距: 支持固定行距(Pt值)和倍数行距
         if para.line_spacing:
-            pf.line_spacing = para.line_spacing
-            pf.line_spacing_rule = WD_LINE_SPACING.MULTIPLE
+            if isinstance(para.line_spacing, (int, float)) and para.line_spacing > 3:
+                # 大于3的值视为固定行距(Pt), 如14.0
+                pf.line_spacing = Pt(para.line_spacing)
+                pf.line_spacing_rule = WD_LINE_SPACING.EXACTLY
+            else:
+                # 倍数行距, 如1.0/1.5/2.0
+                pf.line_spacing = para.line_spacing
+                pf.line_spacing_rule = WD_LINE_SPACING.MULTIPLE
         # 段前段后
         if para.space_before:
             pf.space_before = Pt(para.space_before)
