@@ -163,25 +163,21 @@ class TOCBuilder:
             run5.append(fld_end)
             toc_p.append(run5)
 
-            # 分页符 (目录后换页) - 仅当有标题时才加
-            # 注意: 如果文档已有内容, TOC后分页符可能导致空页
-            # 改为仅在TOC后加分页符, 不在TOC前加
-            page_break_p = OxmlElement('w:p')
-            r_pb = OxmlElement('w:r')
-            br = OxmlElement('w:br')
-            br.set(qn('w:type'), 'page')
-            r_pb.append(br)
-            page_break_p.append(r_pb)
+            # 不插入分页符 (避免TOC占位文本导致额外空页)
+            # Word打开后"更新域"会自动生成目录, 目录会自然分页
+            # page_break_p = OxmlElement('w:p')
+            # r_pb = OxmlElement('w:r')
+            # br = OxmlElement('w:br')
+            # br.set(qn('w:type'), 'page')
+            # r_pb.append(br)
+            # page_break_p.append(r_pb)
 
             # 插入到文档开头 (body 的第一个元素之前)
             body = self.doc.element.body
-            # 找到第一个 sectPr 之前的位置
-            first_elem = body[0] if len(body) > 0 else None
-            # 插入顺序: 标题 → TOC字段 → 分页符
-            body.insert(0, page_break_p)
+            # 插入顺序: 标题 → TOC字段 (无分页符)
             body.insert(0, toc_p)
             body.insert(0, title_p)
-            return 3  # 插入3个段落
+            return 2  # 插入2个段落
         except Exception as e:
             return 0
 
