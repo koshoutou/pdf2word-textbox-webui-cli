@@ -78,7 +78,7 @@ class DocxBuilder:
         # 段落固定行距14pt (原PDF行高约14pt, 紧凑排版)
         from docx.enum.text import WD_LINE_SPACING
         pf = style.paragraph_format
-        pf.line_spacing = Pt(14)
+        pf.line_spacing = Pt(13)
         pf.line_spacing_rule = WD_LINE_SPACING.EXACTLY
         pf.space_before = Pt(0)
         pf.space_after = Pt(0)
